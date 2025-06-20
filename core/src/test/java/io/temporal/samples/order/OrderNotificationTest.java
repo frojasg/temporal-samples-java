@@ -1,4 +1,4 @@
-package io.temporal.samples.hello;
+package io.temporal.samples.order;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -9,8 +9,6 @@ import static org.mockito.Mockito.withSettings;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
-import io.temporal.samples.order.NotificationActivity;
-import io.temporal.samples.order.OrderNotificationWorkflow;
 import io.temporal.testing.TestWorkflowEnvironment;
 import io.temporal.testing.TestWorkflowRule;
 import java.time.Duration;
