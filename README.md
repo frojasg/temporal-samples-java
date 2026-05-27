@@ -3,10 +3,11 @@
 This repository contains samples that demonstrate various capabilities of 
 Temporal using the [Java SDK](https://github.com/temporalio/sdk-java).
 
-It contains two modules:
+It contains the following modules:
 * [Core](/core): showcases many different SDK features.
 * [SpringBoot](/springboot): showcases SpringBoot autoconfig integration.
 * [SpringBoot Basic](/springboot-basic): Minimal sample showing SpringBoot autoconfig integration without any extra external dependencies.
+* [Spring AI](/springai): demonstrates the Temporal Spring AI integration — durable AI agents with chat models, tools, MCP servers, vector stores, and embeddings.
 
 ## Learn more about Temporal and Java SDK
 
@@ -16,9 +17,7 @@ It contains two modules:
 
 ## Requirements
 
-- Java 1.8+ for build and runtime of core samples
-- Java 1.8+ for build and runtime of SpringBoot samples when using SpringBoot 2
-- Java 1.17+ for build and runtime of Spring Boot samples when using SpringBoot 3
+- Java 17+
 - Local Temporal Server, easiest to get started would be using [Temporal CLI](https://github.com/temporalio/cli).
 For more options see docs [here](https://docs.temporal.io/kb/all-the-ways-to-run-a-cluster).
 
@@ -79,7 +78,9 @@ See the README.md file in each main sample directory for cut/paste Gradle comman
     - [**HelloDelayedStart**](/core/src/main/java/io/temporal/samples/hello/HelloDelayedStart.java): Demonstrates how to use delayed start config option when starting a Workflow Executions.
     - [**HelloSignalWithTimer**](/core/src/main/java/io/temporal/samples/hello/HelloSignalWithTimer.java): Demonstrates how to use collect signals for certain amount of time and then process last one. 
     - [**HelloWorkflowTimer**](/core/src/main/java/io/temporal/samples/hello/HelloWorkflowTimer.java): Demonstrates how we can use workflow timer to restrict duration of workflow execution instead of workflow run/execution timeouts.
-
+    - [**Auto-Heartbeating**](/core/src/main/java/io/temporal/samples/autoheartbeat/): Demonstrates use of Auto-heartbeating utility via activity interceptor. 
+    - [**HelloSignalWithStartAndWorkflowInit**](/core/src/main/java/io/temporal/samples/hello/HelloSignalWithStartAndWorkflowInit.java): Demonstrates how WorkflowInit can be useful with SignalWithStart to initialize workflow variables.
+    - [**HelloStandaloneActivity**](/core/src/main/java/io/temporal/samples/hello/HelloStandaloneActivity.java): Demonstrates how to execute a Standalone Activity directly from an ActivityClient, without a Workflow.
 
 #### Scenario-based samples
 
@@ -104,6 +105,15 @@ See the README.md file in each main sample directory for cut/paste Gradle comman
 - [**Sliding Window Batch**](/core/src/main/java/io/temporal/samples/batch/slidingwindow): A batch implementation that maintains a configured number of child workflows during processing.
 
 - [**Safe Message Passing**](/core/src/main/java/io/temporal/samples/safemessagepassing): Safely handling concurrent updates and signals messages.
+
+- [**Custom Annotation**](/core/src/main/java/io/temporal/samples/customannotation): Demonstrates how to create a custom annotation using an interceptor.
+
+- [**Async Packet Delivery**](/core/src/main/java/io/temporal/samples/packetdelivery): Demonstrates running multiple execution paths async within single execution.
+
+- [**Worker Versioning**](/core/src/main/java/io/temporal/samples/workerversioning): Demonstrates how to use worker versioning to manage workflow code changes.
+
+- [**Environment Configuration**](/core/src/main/java/io/temporal/samples/envconfig):
+Load client configuration from TOML files with programmatic overrides.
 
 #### API demonstrations
 
@@ -137,6 +147,8 @@ See the README.md file in each main sample directory for cut/paste Gradle comman
 
 - [**Exclude Workflow/ActivityTypes from Interceptors**](/core/src/main/java/io/temporal/samples/excludefrominterceptor): Demonstrates how to exclude certain workflow / activity types from interceptors.
 
+- [**Standalone Activities**](/core/src/main/java/io/temporal/samples/standaloneactivities): Demonstrates how to start, execute, list, and count Standalone Activities — Activities that run independently without a Workflow, using ActivityClient.
+
 #### SDK Metrics
 
 - [**Set up SDK metrics**](/core/src/main/java/io/temporal/samples/metrics): Demonstrates how to set up and scrape SDK metrics.
@@ -155,10 +167,15 @@ See the README.md file in each main sample directory for cut/paste Gradle comman
 
 - [**Getting Started**](/core/src/main/java/io/temporal/samples/nexus): Demonstrates how to get started with Temporal and Nexus.
 
+- [**Mapping Multiple Arguments**](/core/src/main/java/io/temporal/samples/nexus): Demonstrates how map a Nexus operation to a Workflow that takes multiple arguments.
+
 - [**Cancellation**](/core/src/main/java/io/temporal/samples/nexuscancellation): Demonstrates how to cancel an async Nexus operation.
 
 - [**Context/Header Propagation**](/core/src/main/java/io/temporal/samples/nexuscontextpropagation): Demonstrates how to propagate context through Nexus operation headers.
 
+- [**Nexus Messaging**](/core/src/main/java/io/temporal/samples/nexusmessaging): Demonstrates how to send signal, update and query messages through Nexus.
+  This contains two samples, one sending messages to an existing workflow and a second that creates a workflow through Nexus
+  and sends messages to it.
 <!-- @@@SNIPEND -->
 
 ### Running SpringBoot Samples
@@ -198,3 +215,22 @@ To run any of the SpringBoot samples in your Temporal Cloud namespace:
        ./gradlew bootRun --args='--spring.profiles.active=tc'
 
 3. Follow the previous section from step 2
+
+### Running Spring AI Samples
+
+The Spring AI samples demonstrate the [Temporal Spring AI integration](https://github.com/temporalio/sdk-java/tree/master/temporal-spring-ai), which makes Spring AI agents durable on Temporal — model calls run as Temporal Activities recorded in Workflow history, and tools are dispatched per their type so they fit Workflow execution.
+
+Each sample is its own Spring Boot application with an interactive CLI. Run from the main repo dir:
+
+       ./gradlew :springai:basic:bootRun
+       ./gradlew :springai:mcp:bootRun
+       ./gradlew :springai:multimodel:bootRun
+       ./gradlew :springai:rag:bootRun
+
+All samples need an `OPENAI_API_KEY` environment variable; some need additional setup (see each sample's source for details).
+
+More info on each sample:
+- [**Basic**](/springai/basic): Chat workflow with three tool flavors — activity-backed (`WeatherActivity`), plain workflow tools (`StringTools`), and `@SideEffectTool` (`TimestampTools`) — plus a `PromptChatMemoryAdvisor` for conversation history.
+- [**MCP**](/springai/mcp): Connects to a Model Context Protocol server and exposes its tools to the AI through Temporal activities. Defaults to the filesystem MCP server.
+- [**Multi-Model**](/springai/multimodel): Two providers in one workflow (OpenAI and Anthropic), per-model `ActivityOptions` overrides via a Spring bean, plus a route that exercises Anthropic's extended-thinking mode through provider-specific `ChatOptions` pass-through. Requires `ANTHROPIC_API_KEY` in addition to `OPENAI_API_KEY`.
+- [**RAG**](/springai/rag): Vector store + embeddings for retrieval-augmented generation. Add documents, then ask questions; the workflow searches the vector store and grounds the answer in the retrieved context.

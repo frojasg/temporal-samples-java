@@ -14,24 +14,20 @@ subprojects {
     }
 
     java {
-        if(project.property("springBootPluginVersion") == "2.7.13") {
-            sourceCompatibility = JavaVersion.VERSION_11
-            targetCompatibility = JavaVersion.VERSION_11
-        } else {
-            sourceCompatibility = JavaVersion.VERSION_17
-            targetCompatibility = JavaVersion.VERSION_17
-        }
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     ext {
         otelVersion = '1.30.1'
         otelVersionAlpha = "${otelVersion}-alpha"
-        javaSDKVersion = '1.28.1'
+        javaSDKVersion = '1.35.0'
         camelVersion = '3.22.1'
         jarVersion = '1.0.0'
     }
 
     repositories {
+        mavenLocal()
         maven {
             url "https://oss.sonatype.org/content/repositories/snapshots/"
         }
